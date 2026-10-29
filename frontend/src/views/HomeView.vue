@@ -27,24 +27,49 @@ const recent = computed(() => historyStore.records.slice(0, 3))
 
 const templateCount = computed(() => templateStore.items.length || 13)
 
-const riskItems = [
-  {
-    title: '第三方额度风险',
-    text: '模型调用依赖第三方 API，可能遇到延迟、限流、额度耗尽或价格调整，站点会给出可读错误并允许重试。'
-  },
-  {
-    title: '限流与匿名',
-    text: '无需登录，使用匿名 ID + 网络哈希做限流。超限返回 429 并提示恢复时间，避免被个别访客占满额度。'
-  },
-  {
-    title: '内容安全',
-    text: '服务端会做基础敏感词拦截，上游模型也有安全审核。生成内容仅供参考，请勿用于违法或侵权用途。'
-  },
-  {
-    title: '后端偏薄',
-    text: 'Django 只做密钥保护、转发、限流与调用记录，不做账号体系与计费，复杂需求需要自行扩展。'
-  }
-]
+const staticDemo = import.meta.env.VITE_DEMO_MODE === 'true'
+
+const riskLead = staticDemo
+  ? '静态演示版：生成与额度都在浏览器本地完成，仓库中保留了完整的 Django 版本。'
+  : '这是一个公开体验站点，稳定性与额度取决于第三方服务。'
+
+const riskItems = staticDemo
+  ? [
+      {
+        title: '本地生成',
+        text: '起名、文案、改写与图片都在浏览器内完成，不调用第三方模型，也不会产生 API 费用或延迟。'
+      },
+      {
+        title: '浏览器额度',
+        text: '每个浏览器每分钟 10 次、每天 100 次，计数存在本地；清空站点数据会一并重置。'
+      },
+      {
+        title: '内容准确性与安全',
+        text: '演示结果由规则模板生成，仅用于体验流程，不保证事实准确；请勿直接用于正式发布，也不要输入隐私内容。'
+      },
+      {
+        title: '完整版在仓库中',
+        text: 'Django 转发层、服务端限流、真实模型接入与 Docker 部署均保留在开源仓库，按 README 可切换为在线生成。'
+      }
+    ]
+  : [
+      {
+        title: '第三方额度风险',
+        text: '模型调用依赖第三方 API，可能遇到延迟、限流、额度耗尽或价格调整，站点会给出可读错误并允许重试。'
+      },
+      {
+        title: '限流与匿名',
+        text: '无需登录，使用匿名 ID + 网络哈希做限流。超限返回 429 并提示恢复时间，避免被个别访客占满额度。'
+      },
+      {
+        title: '内容安全',
+        text: '服务端会做基础敏感词拦截，上游模型也有安全审核。生成内容仅供参考，请勿用于违法或侵权用途。'
+      },
+      {
+        title: '后端偏薄',
+        text: 'Django 只做密钥保护、转发、限流与调用记录，不做账号体系与计费，复杂需求需要自行扩展。'
+      }
+    ]
 </script>
 
 <template>
@@ -188,7 +213,7 @@ const riskItems = [
         <div>
           <span class="eyebrow">Transparency</span>
           <h2 id="risk-title" class="section-title">先把风险说清楚</h2>
-          <p class="section-lead">这是一个公开体验站点，稳定性与额度取决于第三方服务。</p>
+          <p class="section-lead">{{ riskLead }}</p>
         </div>
         <RouterLink to="/about" class="btn btn-sm btn-ghost">关于与风险</RouterLink>
       </div>
